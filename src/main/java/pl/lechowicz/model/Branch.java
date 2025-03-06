@@ -1,4 +1,4 @@
 package pl.lechowicz.model;
 
-public class Branch {
+public record Branch(String name, String last_commit_sha) {
 }

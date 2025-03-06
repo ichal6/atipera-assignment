@@ -1,4 +1,6 @@
 package pl.lechowicz.model;
 
-public class Repository {
+import java.util.List;
+
+public record Repository(String name, String owner, List<Branch> branches) {
 }
