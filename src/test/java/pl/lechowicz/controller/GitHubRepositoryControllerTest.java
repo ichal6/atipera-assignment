@@ -28,7 +28,7 @@ public class GitHubRepositoryControllerTest {
                 .body("find { it.name == 'Hello-World' }.branches", hasItems(
                         allOf(
                                 hasEntry("name", "master"),
-                                hasKey("lastCommitSha")
+                                hasKey("last_commit_sha")
                         ),
                         allOf(
                                 hasEntry("name", "octocat-patch-1"),
