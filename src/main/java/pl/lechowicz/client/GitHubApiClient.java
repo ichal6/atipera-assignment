@@ -1,11 +1,14 @@
 package pl.lechowicz.client;
 
+import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import pl.lechowicz.client.exception.ClientException;
 import pl.lechowicz.client.model.Branch;
 import pl.lechowicz.client.model.Repository;
 
@@ -23,4 +26,15 @@ public interface GitHubApiClient {
     @Path("/repos/{username}/{repo}/branches")
     @Produces("application/vnd.github+json")
     Uni<List<Branch>> getBranches(@PathParam("username") String username, @PathParam("repo") String repo);
+
+    @ClientExceptionMapper
+    static ClientException toException(Response response) {
+        System.out.println("Exception");
+
+        if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+            return new ClientException(response.getStatusInfo().getReasonPhrase(), response.getStatus());
+        } else {
+            return new ClientException("Unknown error", response.getStatus());
+        }
+    }
 }
