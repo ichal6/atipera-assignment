@@ -49,7 +49,7 @@ public class GitHubRepositoryService {
                 ));
     }
 
-    private static Throwable handleClientException(String username, Throwable e) {
+    private Throwable handleClientException(String username, Throwable e) {
         if(e instanceof ClientException clientException) {
             if(clientException.getStatus() == 404) {
                 return new GitHubRepositoryException(
