@@ -20,23 +20,7 @@ public class GitHubRepositoryService {
     public Multi<RepositoryDTO> getRepositories(String username) {
         return gitHubApiClient.getRepositories(username)
                 .onFailure(ClientException.class)
-                    .transform(e->
-                    {
-                        if(e instanceof ClientException clientException) {
-                            if(clientException.getStatus() == 404) {
-                                return new GitHubRepositoryException(
-                                        "User " + username + " not found",
-                                        clientException.getStatus()
-                                );
-                            }
-                            return new GitHubRepositoryException(
-                                    e.getMessage(),
-                                    clientException.getStatus()
-                            );
-                        }
-                        System.out.println(e.getMessage());
-                        return e;
-                    })
+                    .transform(e-> handleClientException(username, e))
                 .onItem().transformToMulti(repositories -> Multi.createFrom().iterable(repositories))
                 .filter(repository -> !repository.fork())
                 .onItem().transformToUni(repository -> {
@@ -56,6 +40,22 @@ public class GitHubRepositoryService {
                                     tuple.getItem3()
                             ));
                 }).merge();
+    }
+
+    private static Throwable handleClientException(String username, Throwable e) {
+        if(e instanceof ClientException clientException) {
+            if(clientException.getStatus() == 404) {
+                return new GitHubRepositoryException(
+                        "User " + username + " not found",
+                        clientException.getStatus()
+                );
+            }
+            return new GitHubRepositoryException(
+                    e.getMessage(),
+                    clientException.getStatus()
+            );
+        }
+        return e;
     }
 
     private Multi<BranchDTO> getBranches(String username, String repoName) {
