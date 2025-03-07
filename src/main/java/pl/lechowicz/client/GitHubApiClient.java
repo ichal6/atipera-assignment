@@ -29,12 +29,9 @@ public interface GitHubApiClient {
 
     @ClientExceptionMapper
     static ClientException toException(Response response) {
-        System.out.println("Exception");
-
-        if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-            return new ClientException(response.getStatusInfo().getReasonPhrase(), response.getStatus());
-        } else {
-            return new ClientException("Unknown error", response.getStatus());
-        }
+        return new ClientException(
+                response.getStatusInfo().getReasonPhrase(),
+                response.getStatus()
+        );
     }
 }

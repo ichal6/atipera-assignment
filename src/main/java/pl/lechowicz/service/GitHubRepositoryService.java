@@ -7,7 +7,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import pl.lechowicz.client.GitHubApiClient;
 import pl.lechowicz.client.exception.ClientException;
-import pl.lechowicz.exception.UserNotFoundException;
+import pl.lechowicz.exception.GitHubRepositoryException;
 import pl.lechowicz.model.BranchDTO;
 import pl.lechowicz.model.RepositoryDTO;
 
@@ -20,7 +20,23 @@ public class GitHubRepositoryService {
     public Multi<RepositoryDTO> getRepositories(String username) {
         return gitHubApiClient.getRepositories(username)
                 .onFailure(ClientException.class)
-                    .transform(e-> new UserNotFoundException("User " + username + " not found"))
+                    .transform(e->
+                    {
+                        if(e instanceof ClientException clientException) {
+                            if(clientException.getStatus() == 404) {
+                                return new GitHubRepositoryException(
+                                        "User " + username + " not found",
+                                        clientException.getStatus()
+                                );
+                            }
+                            return new GitHubRepositoryException(
+                                    e.getMessage(),
+                                    clientException.getStatus()
+                            );
+                        }
+                        System.out.println(e.getMessage());
+                        return e;
+                    })
                 .onItem().transformToMulti(repositories -> Multi.createFrom().iterable(repositories))
                 .filter(repository -> !repository.fork())
                 .onItem().transformToUni(repository -> {
