@@ -2,10 +2,7 @@ package pl.lechowicz.client;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import io.smallrye.mutiny.Uni;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import pl.lechowicz.client.exception.ClientException;
@@ -20,7 +17,9 @@ public interface GitHubApiClient {
     @GET
     @Path("/users/{username}/repos")
     @Produces("application/vnd.github+json")
-    Uni<List<Repository>> getRepositories(@PathParam("username") String username);
+    Uni<List<Repository>> getRepositories(@PathParam("username") String username,
+                                          @QueryParam("per_page") int perPage,
+                                          @QueryParam("page") int pageNumber);
 
     @GET
     @Path("/repos/{username}/{repo}/branches")

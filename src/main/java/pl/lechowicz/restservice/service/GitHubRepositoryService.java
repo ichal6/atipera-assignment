@@ -12,23 +12,36 @@ import pl.lechowicz.restservice.exception.GitHubRepositoryException;
 import pl.lechowicz.restservice.model.BranchDTO;
 import pl.lechowicz.restservice.model.RepositoryDTO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ApplicationScoped
 public class GitHubRepositoryService {
+    private static final int PER_PAGE = 100;
+
     @Inject
     @RestClient
     GitHubApiClient gitHubApiClient;
 
     public Multi<RepositoryDTO> getRepositories(String username) {
-        return gitHubApiClient.getRepositories(username)
+        return fetchAllRepositories(username, 1, new ArrayList<>())
                 .onFailure(ClientException.class)
-                    .transform(e-> handleClientException(username, e))
-                .onItem().transformToMulti(
-                        repositories -> Multi.createFrom().iterable(repositories)
-                )
+                .transform(e -> handleClientException(username, e))
+                .onItem().transformToMulti(repositories -> Multi.createFrom().iterable(repositories))
                 .filter(repository -> !repository.fork())
-                .onItem()
-                .transformToUni(this::transformToUniOfRepositoryDTO)
+                .onItem().transformToUni(this::transformToUniOfRepositoryDTO)
                 .merge();
+    }
+
+    private Uni<List<Repository>> fetchAllRepositories(String username, int page, List<Repository> collectedRepos) {
+        return gitHubApiClient.getRepositories(username, PER_PAGE, page)
+                .onItem().transformToUni(repos -> {
+                    collectedRepos.addAll(repos);
+                    if (repos.size() < PER_PAGE) {
+                        return Uni.createFrom().item(collectedRepos);
+                    }
+                    return fetchAllRepositories(username, page + 1, collectedRepos);
+                });
     }
 
     private Uni<RepositoryDTO> transformToUniOfRepositoryDTO(Repository repository) {
@@ -50,8 +63,8 @@ public class GitHubRepositoryService {
     }
 
     private Throwable handleClientException(String username, Throwable e) {
-        if(e instanceof ClientException clientException) {
-            if(clientException.getStatus() == 404) {
+        if (e instanceof ClientException clientException) {
+            if (clientException.getStatus() == 404) {
                 return new GitHubRepositoryException(
                         "User " + username + " not found",
                         clientException.getStatus()
