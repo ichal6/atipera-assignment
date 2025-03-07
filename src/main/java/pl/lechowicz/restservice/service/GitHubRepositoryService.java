@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import pl.lechowicz.client.GitHubApiClient;
 import pl.lechowicz.client.exception.ClientException;
+import pl.lechowicz.client.model.Repository;
 import pl.lechowicz.restservice.exception.GitHubRepositoryException;
 import pl.lechowicz.restservice.model.BranchDTO;
 import pl.lechowicz.restservice.model.RepositoryDTO;
@@ -21,25 +22,31 @@ public class GitHubRepositoryService {
         return gitHubApiClient.getRepositories(username)
                 .onFailure(ClientException.class)
                     .transform(e-> handleClientException(username, e))
-                .onItem().transformToMulti(repositories -> Multi.createFrom().iterable(repositories))
+                .onItem().transformToMulti(
+                        repositories -> Multi.createFrom().iterable(repositories)
+                )
                 .filter(repository -> !repository.fork())
-                .onItem().transformToUni(repository -> {
-                    String repoName = repository.name();
-                    String owner = repository.owner().login();
+                .onItem()
+                .transformToUni(this::transformToUniOfRepositoryDTO)
+                .merge();
+    }
 
-                    Multi<BranchDTO> branches = getBranches(owner, repoName);
+    private Uni<RepositoryDTO> transformToUniOfRepositoryDTO(Repository repository) {
+        String repoName = repository.name();
+        String owner = repository.owner().login();
 
-                    return Uni.combine().all().unis(
-                            Uni.createFrom().item(repoName),
-                            Uni.createFrom().item(owner),
-                            branches.collect().asList()
-                    ).asTuple()
-                            .onItem().transform(tuple -> new RepositoryDTO(
-                                    tuple.getItem1(),
-                                    tuple.getItem2(),
-                                    tuple.getItem3()
-                            ));
-                }).merge();
+        Multi<BranchDTO> branches = getBranches(owner, repoName);
+
+        return Uni.combine().all().unis(
+                        Uni.createFrom().item(repoName),
+                        Uni.createFrom().item(owner),
+                        branches.collect().asList()
+                ).asTuple()
+                .onItem().transform(tuple -> new RepositoryDTO(
+                        tuple.getItem1(),
+                        tuple.getItem2(),
+                        tuple.getItem3()
+                ));
     }
 
     private static Throwable handleClientException(String username, Throwable e) {
