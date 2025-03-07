@@ -1,5 +1,6 @@
 package pl.lechowicz.client;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -16,7 +17,7 @@ public interface GitHubApiClient {
     @GET
     @Path("/users/{username}/repos")
     @Produces("application/vnd.github+json")
-    List<Repository> getRepositories(@PathParam("username") String username);
+    Uni<List<Repository>> getRepositories(@PathParam("username") String username);
 
     @GET
     @Path("/repos/{username}/{repo}/branches")
