@@ -1,4 +1,4 @@
-package pl.lechowicz.controller;
+package pl.lechowicz.restservice.controller;
 
 import org.junit.jupiter.api.Test;
 
