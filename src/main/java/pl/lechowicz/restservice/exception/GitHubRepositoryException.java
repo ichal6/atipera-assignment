@@ -1,4 +1,4 @@
-package pl.lechowicz.exception;
+package pl.lechowicz.restservice.exception;
 
 public class GitHubRepositoryException extends RuntimeException {
     private final int status;

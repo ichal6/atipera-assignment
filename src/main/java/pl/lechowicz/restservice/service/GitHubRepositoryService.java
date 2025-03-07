@@ -1,4 +1,4 @@
-package pl.lechowicz.service;
+package pl.lechowicz.restservice.service;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -7,9 +7,9 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import pl.lechowicz.client.GitHubApiClient;
 import pl.lechowicz.client.exception.ClientException;
-import pl.lechowicz.exception.GitHubRepositoryException;
-import pl.lechowicz.model.BranchDTO;
-import pl.lechowicz.model.RepositoryDTO;
+import pl.lechowicz.restservice.exception.GitHubRepositoryException;
+import pl.lechowicz.restservice.model.BranchDTO;
+import pl.lechowicz.restservice.model.RepositoryDTO;
 
 @ApplicationScoped
 public class GitHubRepositoryService {

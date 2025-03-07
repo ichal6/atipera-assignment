@@ -1,12 +1,12 @@
-package pl.lechowicz.controller;
+package pl.lechowicz.restservice.controller;
 
 import io.smallrye.mutiny.Multi;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import pl.lechowicz.model.RepositoryDTO;
-import pl.lechowicz.service.GitHubRepositoryService;
+import pl.lechowicz.restservice.model.RepositoryDTO;
+import pl.lechowicz.restservice.service.GitHubRepositoryService;
 
 @Path("/")
 public class GitHubRepositoryController {
