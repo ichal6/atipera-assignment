@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
+import pl.lechowicz.client.model.Branch;
 import pl.lechowicz.client.model.Repository;
 
 import java.util.List;
@@ -27,14 +28,15 @@ public class GitHubApiClientTest {
         assertNotNull(firstRepo.name());
         assertEquals("octocat", firstRepo.owner().login());
     }
-//
-//    @Test
-//    public void testGetBranches() {
-//        List<Branch> branches = gitHubApiClient.getBranches("octocat", "Hello-World");
-//
-//        assertFalse(branches.isEmpty());
-//        Branch firstBranch = branches.getFirst();
-//        assertNotNull(firstBranch.name());
-//        assertNotNull(firstBranch.commit().sha());
-//    }
+
+    @Test
+    public void testGetBranches() {
+        List<Branch> branches = gitHubApiClient.getBranches("octocat", "Hello-World")
+                .await().indefinitely();
+
+        assertFalse(branches.isEmpty());
+        Branch firstBranch = branches.getFirst();
+        assertNotNull(firstBranch.name());
+        assertNotNull(firstBranch.commit().sha());
+    }
 }

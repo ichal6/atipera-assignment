@@ -22,5 +22,5 @@ public interface GitHubApiClient {
     @GET
     @Path("/repos/{username}/{repo}/branches")
     @Produces("application/vnd.github+json")
-    List<Branch> getBranches(@PathParam("username") String username, @PathParam("repo") String repo);
+    Uni<List<Branch>> getBranches(@PathParam("username") String username, @PathParam("repo") String repo);
 }
