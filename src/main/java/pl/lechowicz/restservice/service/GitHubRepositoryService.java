@@ -40,7 +40,14 @@ public class GitHubRepositoryService {
                     if (repos.size() < PER_PAGE) {
                         return Uni.createFrom().item(collectedRepos);
                     }
-                    return fetchAllRepositories(username, page + 1, collectedRepos);
+                    return Uni.combine().all().unis(
+                            Uni.createFrom().item(collectedRepos),
+                            fetchAllRepositories(username, page + 1, new ArrayList<>())
+                    ).asTuple().onItem().transform(tuple -> {
+                        List<Repository> allRepos = new ArrayList<>(tuple.getItem1());
+                        allRepos.addAll(tuple.getItem2());
+                        return allRepos;
+                    });
                 });
     }
 
