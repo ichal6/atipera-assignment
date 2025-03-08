@@ -1,8 +1,20 @@
 # atipera-assignment
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project provides a REST API that retrieves non-forked repositories and their branches from the GitHub API for a given user. 
+It's built using Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+
+## Features
+
+*   **Retrieves Non-Forked Repositories:** Fetches only non-forked repositories from GitHub for a specified username.
+*   **Fetches Branches:** Retrieves the branches for each non-forked repository, including the branch name and the SHA of the last commit.
+*   **Error Handling:** Gracefully handles 404 errors (user not found) and other client exceptions.
+
+## Prerequisites
+
+*   Java 17+
+*   Maven 3.9+
 
 ## Running the application in dev mode
 
@@ -43,7 +55,8 @@ You can create a native executable using:
 ./mvnw package -Dnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Or, if you don't have GraalVM installed, you can run the native executable build in a container. 
+You should have Docker installed and running on your machine:
 
 ```shell script
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
@@ -55,8 +68,68 @@ If you want to learn more about building native executables, please consult <htt
 
 ## Provided Code
 
-### REST
+### Accessing the API
 
-Easily start your REST Web Services
+Once the application is running, you can access the API at:
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+    http://localhost:8080/api/github/repositories/{username}
+
+Replace `{username}` with the desired GitHub username.
+
+**Example:**
+
+    http://localhost:8080/api/github/repositories/ichal6
+
+### API Response
+
+The API returns a JSON array of repository objects, each with the following
+structure:
+
+```json
+[ 
+  { 
+    "name": "repository-name", 
+    "ownerLogin": "username", 
+    "branches": 
+    [ 
+      { 
+        "name": "branch-name", 
+        "lastCommitSha": "commit-sha"
+      } 
+    ]
+  } 
+]
+```
+
+In case user do not exist proper response will be returned:
+
+```json
+{ 
+  "errorMessage": "User nameOfUser not found", 
+  "status": 404
+}
+```
+
+## Project Structure
+
+* `src/main/java/pl/lechowicz/restservice/resource/`: Contains the REST resources source (`GitHubRepositoryResource`).
+* `src/main/java/pl/lechowicz/restservice/service/`: Contains the service (`GitHubRepositoryService`) that interacts with the GitHub API.
+* `src/main/java/pl/lechowicz/client/`: Contains the REST client interface (`GitHubApiClient`) and related model classes.
+* `src/main/java/pl/lechowicz/restservice/dto/`: Contains the DTOs used by the REST API.
+* `src/main/resources/application.properties`: Contains application configuration.
+* `src/test/java/pl/lechowicz/restservice/resource`: Contains tests for the resource.
+
+
+## Dependencies
+
+* Quarkus
+* MicroProfile Rest Client
+* Mutiny
+* JUnit
+* RestAssured
+
+## Learn More
+
+* Quarkus: https://quarkus.io/
+* Quarkus Guides: https://quarkus.io/guides/
+* Building native executables https://quarkus.io/guides/maven-tooling
