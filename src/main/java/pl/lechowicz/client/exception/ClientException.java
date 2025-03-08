@@ -2,6 +2,7 @@ package pl.lechowicz.client.exception;
 
 public class ClientException extends RuntimeException {
     private final int status;
+
     public ClientException(String message, int status) {
         super(message);
         this.status = status;
