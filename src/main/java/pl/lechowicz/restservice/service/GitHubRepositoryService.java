@@ -24,7 +24,7 @@ public class GitHubRepositoryService {
     GitHubApiClient gitHubApiClient;
 
     public Multi<RepositoryDTO> getRepositories(String username) {
-        return fetchAllRepositories(username, 1, new ArrayList<>())
+        return fetchAllRepositories(username, 1, new ArrayList<>(PER_PAGE))
                 .onFailure(ClientException.class)
                 .transform(e -> handleClientException(username, e))
                 .onItem().transformToMulti(repositories -> Multi.createFrom().iterable(repositories))
