@@ -9,8 +9,8 @@ import pl.lechowicz.client.GitHubApiClient;
 import pl.lechowicz.client.exception.ClientException;
 import pl.lechowicz.client.model.Repository;
 import pl.lechowicz.restservice.exception.GitHubRepositoryException;
-import pl.lechowicz.restservice.model.BranchDTO;
-import pl.lechowicz.restservice.model.RepositoryDTO;
+import pl.lechowicz.restservice.dto.BranchDTO;
+import pl.lechowicz.restservice.dto.RepositoryDTO;
 
 import java.util.ArrayList;
 import java.util.List;

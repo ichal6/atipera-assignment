@@ -1,4 +1,4 @@
-package pl.lechowicz.restservice.model;
+package pl.lechowicz.restservice.dto;
 
 import java.util.List;
 

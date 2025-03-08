@@ -1,11 +1,11 @@
-package pl.lechowicz.restservice.controller;
+package pl.lechowicz.restservice.resource;
 
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-public class GitHubRepositoryControllerTest {
+public class GitHubRepositoryResourceTest {
     @Test
     public void testListRepositoriesForIchal6User() {
         // Arrange
